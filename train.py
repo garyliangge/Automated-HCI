@@ -24,45 +24,45 @@ def cnn_model_fn(features, labels, mode):
     # Convolutional Layer #1
     conv1 = tf.layers.conv2d(
         inputs=input_layer,
-        filters=16,
+        filters=32,
         kernel_size=[5, 5],
         padding="same",
         activation=tf.nn.relu)
 
     # Pooling Layer #1
     # First max pooling layer with a 2x2 filter and stride of 2
-    # Input Tensor Shape: [batch_size, 400, 400, 16]
-    # Output Tensor Shape: [batch_size, 200, 200, 16]
+    # Input Tensor Shape: [batch_size, 400, 400, 32]
+    # Output Tensor Shape: [batch_size, 200, 200, 32]
     pool1 = tf.layers.max_pooling2d(inputs=conv1, pool_size=[2, 2], strides=2)
 
     # Convolutional Layer #2
     # Computes 64 features using a 5x5 filter.
     # Padding is added to preserve width and height.
-    # Input Tensor Shape: [batch_size, 200, 200, 16]
-    # Output Tensor Shape: [batch_size, 200, 200, 32]
+    # Input Tensor Shape: [batch_size, 200, 200, 32]
+    # Output Tensor Shape: [batch_size, 200, 200, 64]
     conv2 = tf.layers.conv2d(
         inputs=pool1,
-        filters=32,
+        filters=64,
         kernel_size=[5, 5],
         padding="same",
         activation=tf.nn.relu)
 
     # Pooling Layer #2
     # Second max pooling layer with a 2x2 filter and stride of 2
-    # Input Tensor Shape: [batch_size, 200, 200, 32]
-    # Output Tensor Shape: [batch_size, 100, 100, 32]
+    # Input Tensor Shape: [batch_size, 200, 200, 64]
+    # Output Tensor Shape: [batch_size, 100, 100, 64]
     pool2 = tf.layers.max_pooling2d(inputs=conv2, pool_size=[2, 2], strides=2)
 
     # Flatten tensor into a batch of vectors
-    # Input Tensor Shape: [batch_size, 100, 100, 32]
-    # Output Tensor Shape: [batch_size, 100 * 100 * 32]
-    pool2_flat = tf.reshape(pool2, [-1, 100 * 100 * 32])
+    # Input Tensor Shape: [batch_size, 100, 100, 64]
+    # Output Tensor Shape: [batch_size, 100 * 100 * 64]
+    pool2_flat = tf.reshape(pool2, [-1, 100 * 100 * 64])
 
     # Dense Layer
     # Densely connected layer with 2048 neurons
-    # Input Tensor Shape: [batch_size, 100 * 100 * 32]
-    # Output Tensor Shape: [batch_size, 512]
-    dense = tf.layers.dense(inputs=pool2_flat, units=512, activation=tf.nn.relu)
+    # Input Tensor Shape: [batch_size, 100 * 100 * 64]
+    # Output Tensor Shape: [batch_size, 2048]
+    dense = tf.layers.dense(inputs=pool2_flat, units=2048, activation=tf.nn.relu)
 
     # Add dropout operation; 0.6 probability that element will be kept
     dropout = tf.layers.dropout(
@@ -106,7 +106,7 @@ def cnn_model_fn(features, labels, mode):
 
 def main(unused_argv):
     # Load training and eval data
-    train_data, train_labels = get_training_batch(200)
+    train_data, train_labels = get_training_batch(8000)
     eval_data, eval_labels = get_eval_data()
 
     # Create the Estimator
@@ -117,18 +117,18 @@ def main(unused_argv):
     # Log the values in the "Softmax" tensor with label "probabilities"
     tensors_to_log = {"probabilities": "softmax_tensor"}
     logging_hook = tf.train.LoggingTensorHook(
-        tensors=tensors_to_log, every_n_iter=2)
+        tensors=tensors_to_log, every_n_iter=20)
 
     # Train the model
     train_input_fn = tf.estimator.inputs.numpy_input_fn(
         x={"x": train_data},
         y=train_labels,
-        batch_size=20,
+        batch_size=100,
         num_epochs=None,
         shuffle=True)
     mnist_classifier.train(
         input_fn=train_input_fn,
-        steps=20,
+        steps=1000,
         hooks=[logging_hook])
 
     # Evaluate the model and print results
