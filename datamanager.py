@@ -6,7 +6,7 @@ from os.path import isfile, isdir, join
 from PIL import Image
 
 category_path = './categories.json'
-TEST_SIZE = 1000
+TEST_SIZE = 2000
 
 """Returns a label (0, 1, 2) and an image in a numpy ndarray.
 

@@ -17,13 +17,15 @@ BATCHING = True
 
 def main(unused_argv):
 
+    accuracies = []
+
     if BATCHING:
         # Create the Estimator
         mnist_classifier = tf.estimator.Estimator(
         model_fn=cnn_model_fn, model_dir="./convnet_model")
 
             # Load training and eval data
-        for eval_data, eval_labels in eval_data_batches(5):
+        for eval_data, eval_labels in eval_data_batches(10):
             label_counts(eval_labels)
 
             # Evaluate the model and print results
@@ -33,7 +35,11 @@ def main(unused_argv):
                 num_epochs=1,
                 shuffle=False)
             eval_results = mnist_classifier.evaluate(input_fn=eval_input_fn)
+            accuracies.append(eval_results['accuracy'])
             print(eval_results)
+
+        print("OVRALL ACCURACY: {}".format(sum(accuracies) / float(len(accuracies))))
+        print(eval_results)
 
     else:
         # Load training and eval data
@@ -52,6 +58,7 @@ def main(unused_argv):
             shuffle=False)
         eval_results = mnist_classifier.evaluate(input_fn=eval_input_fn)
         print(eval_results)
+
 
 
 def label_counts(labels):
