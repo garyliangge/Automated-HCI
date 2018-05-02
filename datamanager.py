@@ -60,7 +60,7 @@ def eval_data_batches(num_batches):
 		categories = json.load(json_data)
 
 		for i in range(num_batches):
-			keys = list(categories.keys())[i*TEST_SIZE/5:(i+1)*TEST_SIZE/5]
+			keys = list(categories.keys())[i*TEST_SIZE//num_batches:(i+1)*TEST_SIZE//num_batches]
 			images = np.empty((0, 400*400)).astype(np.float32)
 			labels = []
 
