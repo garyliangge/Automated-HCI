@@ -10,7 +10,7 @@ data_path = './filtered_traces/'
 
 """Generate category labels for our screenshots.
 We have 10477 samples in totol.
-"""
+asdfasdf"""
 def generate_and_save_labels():
 
 	"""Dictionary that maps from screenshot path to category.
@@ -27,7 +27,7 @@ def generate_and_save_labels():
 
 		#### Used for progress tracking ####
 		count += 1
-		if not count % 100:
+		if not count % 10:
 			print("{:.1%}".format(float(count) / len(app_paths)))
 		####################################
 
@@ -46,8 +46,9 @@ def generate_and_save_labels():
 					if isfile(screenshot_path): # Verify the screenshot exists
 
 						resize_path = join(screenshot_dir, key + "_resize.jpg")
-						img = Image.open(screenshot_path).convert('L').resize((400, 400), Image.ANTIALIAS)
-						img.save(resize_path)
+						if not isfile(resize_path):
+							img = Image.open(screenshot_path).convert('L').resize((400, 400), Image.ANTIALIAS)
+							img.save(resize_path)
 
 						if len(d[key]) == 0:
 							categories[resize_path] = 0

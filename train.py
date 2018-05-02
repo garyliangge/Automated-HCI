@@ -116,21 +116,21 @@ def main(unused_argv):
     # Log the values in the "Softmax" tensor with label "probabilities"
     tensors_to_log = {"probabilities": "softmax_tensor"}
     logging_hook = tf.train.LoggingTensorHook(
-        tensors=tensors_to_log, every_n_iter=20)
+        tensors=tensors_to_log, every_n_iter=50)
 
     # Train the model
-    for i in range(100):
+    for i in range(10):
         print("Loop {}".format(i))
-        train_data, train_labels = get_training_batch(10)
+        train_data, train_labels = get_training_batch(500)
         train_input_fn = tf.estimator.inputs.numpy_input_fn(
             x={"x": train_data},
             y=train_labels,
-            batch_size=10,
+            batch_size=100,
             num_epochs=None,
             shuffle=True)
         mnist_classifier.train(
             input_fn=train_input_fn,
-            steps=1,
+            steps=10,
             hooks=[logging_hook])
 
     # Evaluate the model and print results

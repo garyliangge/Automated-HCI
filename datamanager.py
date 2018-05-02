@@ -24,7 +24,8 @@ def get_training_batch(size):
 		for _ in range(size):
 			index = np.random.randint(0, len(keys))
 			screenshot_path = keys[index]
-			img = np.asarray(Image.open(screenshot_path).convert('L').resize((400, 400), Image.ANTIALIAS))
+		#	img = np.asarray(Image.open(screenshot_path).convert('L').resize((400, 400), Image.ANTIALIAS))
+			img = np.asarray(Image.open(screenshot_path))
 			img = img.flatten().astype(np.float32)
 
 			images = np.append(images, [img], axis=0)
@@ -44,7 +45,8 @@ def get_eval_data():
 		labels = []
 
 		for screenshot_path in keys:
-			img = np.asarray(Image.open(screenshot_path).convert('L').resize((400, 400), Image.ANTIALIAS))
+		#	img = np.asarray(Image.open(screenshot_path).convert('L').resize((400, 400), Image.ANTIALIAS))
+			img = np.asarray(Image.open(screenshot_path))
 			img = img.flatten().astype(np.float32)
 
 			images = np.append(images, [img], axis=0)
