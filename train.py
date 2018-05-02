@@ -105,9 +105,6 @@ def cnn_model_fn(features, labels, mode):
 
 
 def main(unused_argv):
-    # Load training and eval data
-    eval_data, eval_labels = get_eval_data()
-
     # Create the Estimator
     mnist_classifier = tf.estimator.Estimator(
         model_fn=cnn_model_fn, model_dir="./convnet_model")
@@ -132,16 +129,6 @@ def main(unused_argv):
             input_fn=train_input_fn,
             steps=10,
             hooks=[logging_hook])
-
-    # Evaluate the model and print results
-    eval_input_fn = tf.estimator.inputs.numpy_input_fn(
-        x={"x": eval_data},
-        y=eval_labels,
-        num_epochs=1,
-        shuffle=False)
-    eval_results = mnist_classifier.evaluate(input_fn=eval_input_fn)
-    print(eval_results)
-
 
 
 
