@@ -39,7 +39,6 @@ def main(unused_argv):
             print(eval_results)
 
         print("OVRALL ACCURACY: {}".format(sum(accuracies) / float(len(accuracies))))
-        print(eval_results)
 
     else:
         # Load training and eval data
