@@ -16,6 +16,7 @@ tf.logging.set_verbosity(tf.logging.INFO)
 def main(unused_argv):
     # Load training and eval data
     eval_data, eval_labels = get_eval_data()
+    label_counts(eval_labels)
 
     # Create the Estimator
     mnist_classifier = tf.estimator.Estimator(
@@ -29,6 +30,13 @@ def main(unused_argv):
         shuffle=False)
     eval_results = mnist_classifier.evaluate(input_fn=eval_input_fn)
     print(eval_results)
+
+
+def label_counts(labels):
+    counts = [0, 0, 0]
+    for val in values:
+        counts[val] += 1
+    print("Label counts: {}".format(counts))
 
 
 
