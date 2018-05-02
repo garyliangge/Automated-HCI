@@ -41,11 +41,8 @@ def generate_labels():
                 d = json.load(json_data)
                 for key in d:
                     screenshot_path = join(screenshot_dir, key + ".jpg")
-                    if isfile(screenshot_path): # Verify the screenshot exists
-                        # resize_path = join(screenshot_dir, key + "_resize.jpg")
-                        # img = Image.open(screenshot_path).resize((500, 500), Image.ANTIALIAS)
-                        # img.save(resize_path)
 
+                    if isfile(screenshot_path): # Verify the screenshot exists
                         if len(d[key]) == 0:
                             categories[screenshot_path] = 0
                         elif len(d[key]) == 1:
