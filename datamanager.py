@@ -54,3 +54,23 @@ def get_eval_data():
 
 		return (images, np.asarray(labels, dtype=np.int32))
 
+"""Returns a generator function for smaller batches."""
+def eval_data_batches(num_batches):
+	categories = json.load(json_data)
+
+	for i in range(num_batches):
+		keys = list(categories.keys())[i*TEST_SIZE/5:(i+1)*TEST_SIZE/5]
+		images = np.empty((0, 400*400)).astype(np.float32)
+		labels = []
+
+		for screenshot_path in keys:
+		#	img = np.asarray(Image.open(screenshot_path).convert('L').resize((400, 400), Image.ANTIALIAS))
+			img = np.asarray(Image.open(screenshot_path))
+			img = img.flatten().astype(np.float32)
+
+			images = np.append(images, [img], axis=0)
+			labels.append(categories[screenshot_path])
+
+		yield (images, np.asarray(labels, dtype=np.int32))
+
+
