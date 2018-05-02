@@ -106,7 +106,6 @@ def cnn_model_fn(features, labels, mode):
 
 def main(unused_argv):
     # Load training and eval data
-    train_data, train_labels = get_training_batch(1000)
     eval_data, eval_labels = get_eval_data()
 
     # Create the Estimator
@@ -120,16 +119,19 @@ def main(unused_argv):
         tensors=tensors_to_log, every_n_iter=20)
 
     # Train the model
-    train_input_fn = tf.estimator.inputs.numpy_input_fn(
-        x={"x": train_data},
-        y=train_labels,
-        batch_size=50,
-        num_epochs=None,
-        shuffle=True)
-    mnist_classifier.train(
-        input_fn=train_input_fn,
-        steps=100,
-        hooks=[logging_hook])
+    for i in range(100):
+        print("Loop {}".format(i))
+        train_data, train_labels = get_training_batch(10)
+        train_input_fn = tf.estimator.inputs.numpy_input_fn(
+            x={"x": train_data},
+            y=train_labels,
+            batch_size=10,
+            num_epochs=None,
+            shuffle=True)
+        mnist_classifier.train(
+            input_fn=train_input_fn,
+            steps=1,
+            hooks=[logging_hook])
 
     # Evaluate the model and print results
     eval_input_fn = tf.estimator.inputs.numpy_input_fn(
