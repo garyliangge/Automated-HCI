@@ -36,7 +36,7 @@ def main(unused_argv):
     model_fn=cnn_model_fn, model_dir="./convnet_model")
 
         # Load training and eval data
-    for eval_data, eval_labels in eval_data_batches():
+    for eval_data, eval_labels in eval_data_batches(5):
         label_counts(eval_labels)
 
         # Evaluate the model and print results
