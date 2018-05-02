@@ -34,8 +34,8 @@ def main(unused_argv):
 
 def label_counts(labels):
     counts = [0, 0, 0]
-    for val in values:
-        counts[val] += 1
+    for label in labels:
+        counts[label] += 1
     print("Label counts: {}".format(counts))
 
 
