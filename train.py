@@ -155,12 +155,11 @@ def main(unused_argv):
 		tensors=tensors_to_log, every_n_iter=50)
 
 	# Train the model
-	#for i in range(200):
-	for i in range(1):
+	for i in range(200):
+	#for train_data, train_labels in eval_data_batches(5):
 		print("Loop {}".format(i))
-	#train_data, train_labels = get_training_batch(300)
-	train_data, train_labels = get_eval_data()
-	train_input_fn = tf.estimator.inputs.numpy_input_fn(
+		train_data, train_labels = get_training_batch(300)
+		train_input_fn = tf.estimator.inputs.numpy_input_fn(
 			x={"x": train_data},
 			y=train_labels,
 			batch_size=30,
@@ -168,7 +167,7 @@ def main(unused_argv):
 			shuffle=True)
 		classifier.train(
 			input_fn=train_input_fn,
-			steps=1000,
+			steps=20,
 			hooks=[logging_hook])
 
 
