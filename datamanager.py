@@ -20,7 +20,7 @@ def get_training_batch(size):
 		keys = list(train_data.keys())
 
 		images = np.empty((0, 400*400)).astype(np.float32)
-		labels = []
+		labels = np.empty((0, 7)).astype(np.float32)
 
 		for _ in range(size):
 			index = np.random.randint(0, len(keys))
@@ -29,10 +29,14 @@ def get_training_batch(size):
 			img = np.asarray(Image.open(screenshot_path))
 			img = img.flatten().astype(np.float32)
 
-			images = np.append(images, [img], axis=0)
-			labels.append(train_data[screenshot_path])
+			label = train_data[screenshot_path]
+			labels = [0]*7
+			labels[train_data[screenshot_path]] = 1.0
 
-		return (images, np.asarray(labels, dtype=np.int32))
+			images = np.append(images, [img], axis=0)
+			labels = np.append(labels, [label], axis=0)
+
+		return (images, labels)
 
 
 """Returns a label (0, 1, 2) and an image in a numpy ndarray."""
@@ -43,17 +47,21 @@ def get_eval_data():
 		keys = list(test_data.keys())
 
 		images = np.empty((0, 400*400)).astype(np.float32)
-		labels = []
+		labels = np.empty((0, 7)).astype(np.float32)
 
 		for screenshot_path in keys:
 		#	img = np.asarray(Image.open(screenshot_path).convert('L').resize((400, 400), Image.ANTIALIAS))
 			img = np.asarray(Image.open(screenshot_path))
 			img = img.flatten().astype(np.float32)
 
-			images = np.append(images, [img], axis=0)
-			labels.append(test_data[screenshot_path])
+			label = train_data[screenshot_path]
+			labels = [0]*7
+			labels[train_data[screenshot_path]] = 1.0
 
-		return (images, np.asarray(labels, dtype=np.int32))
+			images = np.append(images, [img], axis=0)
+			labels = np.append(labels, [label], axis=0)
+
+		return (images, labels)
 
 """Returns a generator function for smaller batches."""
 def eval_data_batches(num_batches):
@@ -65,17 +73,22 @@ def eval_data_batches(num_batches):
 
 		for i in range(num_batches):
 			keys = data_keys[i*TEST_SIZE//num_batches : (i+1)*TEST_SIZE//num_batches]
+			
 			images = np.empty((0, 400*400)).astype(np.float32)
-			labels = []
+			labels = np.empty((0, 7)).astype(np.float32)
 
 			for screenshot_path in keys:
 			#	img = np.asarray(Image.open(screenshot_path).convert('L').resize((400, 400), Image.ANTIALIAS))
 				img = np.asarray(Image.open(screenshot_path))
 				img = img.flatten().astype(np.float32)
 
-				images = np.append(images, [img], axis=0)
-				labels.append(test_data[screenshot_path])
+				label = train_data[screenshot_path]
+				labels = [0]*7
+				labels[train_data[screenshot_path]] = 1.0
 
-			yield (images, np.asarray(labels, dtype=np.int32))
+				images = np.append(images, [img], axis=0)
+				labels = np.append(labels, [label], axis=0)
+
+			yield (images, labels)
 
 
