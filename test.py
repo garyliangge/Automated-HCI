@@ -57,7 +57,7 @@ def main(unused_argv):
 
 
 def label_counts(labels):
-    counts = [0, 0, 0, 0]
+    counts = [0] * 7
     for label in labels:
         counts[label] += 1
     print("Label counts: {}".format(counts))
