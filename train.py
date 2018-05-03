@@ -76,8 +76,8 @@ def cnn_model_fn(features, labels, mode):
 
     # Logits layer
     # Input Tensor Shape: [batch_size, 1024]
-    # Output Tensor Shape: [batch_size, 3]
-    logits = tf.layers.dense(inputs=dropout, units=4)
+    # Output Tensor Shape: [batch_size, 7]
+    logits = tf.layers.dense(inputs=dropout, units=7)
 
     predictions = {
         # Generate predictions (for PREDICT and EVAL mode)

@@ -21,8 +21,12 @@ def generate_and_save_labels():
 	"""Dictionary that maps from screenshot path to category.
 	Categories are:
 	0: No action taken
-	1: Tap
-	2: Swipe
+	1: Tap quadrant 1
+	2: Tap quadrant 2
+	3: Tap quadrant 3
+	4: Tap quadrant 4
+	5: Swipe up/down
+	6: Swipe left/right
 	"""
 	categories = {}
 	count = 0
@@ -58,14 +62,24 @@ def generate_and_save_labels():
 						if len(d[key]) == 0:
 							categories[resize_path] = 0
 						elif len(d[key]) == 1:
-							categories[resize_path] = 1
+							x, y = d[key][0]
+							if x > 0.5:
+								if y > 0.5:
+									categories[resize_path] = 1
+								else:
+									categories[resize_path] = 2
+							else:
+								if y > 0.5:
+									categories[resize_path] = 3
+								else:
+									categories[resize_path] = 4
 						else:
 							xd = abs(d[key][0][0] - d[key][-1][0])
 							yd = abs(d[key][0][1] - d[key][-1][1])
 							if xd > yd:
-								categories[resize_path] = 2
+								categories[resize_path] = 5
 							else:
-								categories[resize_path] = 3
+								categories[resize_path] = 6
 
 	test = {}
 	train = {}
