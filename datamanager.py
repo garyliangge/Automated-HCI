@@ -36,7 +36,7 @@ def get_training_batch(size):
 			images = np.append(images, [img], axis=0)
 			labels = np.append(labels, [label], axis=0)
 
-		return (images, labels)
+		return (images, np.asarray(labels, dtype=np.int32))
 
 
 """Returns a label (0, 1, 2) and an image in a numpy ndarray."""
@@ -61,7 +61,7 @@ def get_eval_data():
 			images = np.append(images, [img], axis=0)
 			labels = np.append(labels, [label], axis=0)
 
-		return (images, labels)
+		return (images, np.asarray(labels, dtype=np.int32))
 
 """Returns a generator function for smaller batches."""
 def eval_data_batches(num_batches):
@@ -89,6 +89,6 @@ def eval_data_batches(num_batches):
 				images = np.append(images, [img], axis=0)
 				labels = np.append(labels, [label], axis=0)
 
-			yield (images, labels)
+			yield (images, np.asarray(labels, dtype=np.int32))
 
 
