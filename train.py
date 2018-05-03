@@ -82,31 +82,31 @@ def cnn_model_fn(features, labels, mode):
     # Densely connected layer with 1024 neurons
     # Input Tensor Shape: [batch_size, 25 * 25 * 96]
     # Output Tensor Shape: [batch_size, 1024]
-    dense1 = tf.layers.dense(inputs=pool3_flat, units=1024, activation=tf.nn.relu)
+    dense1 = tf.layers.dense(inputs=pool3_flat, units=1024, activation=tf.nn.leaky_relu)
 
     # Dense Layer
     # Densely connected layer with 512 neurons
     # Input Tensor Shape: [batch_size, 1024]
     # Output Tensor Shape: [batch_size, 512]
-    dense2 = tf.layers.dense(inputs=dense1, units=512, activation=tf.nn.relu)
+    dense2 = tf.layers.dense(inputs=dense1, units=512, activation=tf.nn.leaky_relu)
 
     # Dense Layer
     # Densely connected layer with 512 neurons
     # Input Tensor Shape: [batch_size, 512]
     # Output Tensor Shape: [batch_size, 256]
-    dense3 = tf.layers.dense(inputs=dense2, units=256, activation=tf.nn.relu)
+    dense3 = tf.layers.dense(inputs=dense2, units=256, activation=tf.nn.leaky_relu)
 
-    # # Add dropout operation; 1.0 probability that element will be kept
-    # dropout = tf.layers.dropout(
-    #     inputs=dense3, rate=0.0, training=mode == tf.estimator.ModeKeys.TRAIN)
+    # Add dropout operation; 0.5 probability that element will be kept
+    dropout = tf.layers.dropout(
+        inputs=dense3, rate=0.5, training=mode == tf.estimator.ModeKeys.TRAIN)
 
     # Logits layer
     # Input Tensor Shape: [batch_size, 512]
     # Output Tensor Shape: [batch_size, 7]
-    logits = tf.layers.dense(inputs=dense3, units=7)
+    logits = tf.layers.dense(inputs=dropout, units=7)
 
     # Avoid NaN loss error by perturbing logits
-    epsilon = tf.constant(1e-6)
+    epsilon = tf.constant(1e-8)
     logits = logits + epsilon 
 
     predictions = {
@@ -128,7 +128,7 @@ def cnn_model_fn(features, labels, mode):
     # Configure the Training Op (for TRAIN mode)
     if mode == tf.estimator.ModeKeys.TRAIN:
         # optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.04)
-        optimizer = tf.train.AdamOptimizer(learning_rate=0.04)
+        optimizer = tf.train.AdamOptimizer(learning_rate=0.001)
         train_op = optimizer.minimize(
             loss=loss,
             global_step=tf.train.get_global_step())
@@ -137,7 +137,7 @@ def cnn_model_fn(features, labels, mode):
     # Add evaluation metrics (for EVAL mode)
     eval_metric_ops = {
         "accuracy": tf.metrics.accuracy(
-            onehot_labels=onehot_labels, predictions=predictions["classes"])}
+            labels=labels, predictions=predictions["classes"])}
     return tf.estimator.EstimatorSpec(
         mode=mode, loss=loss, eval_metric_ops=eval_metric_ops)
 
@@ -155,18 +155,20 @@ def main(unused_argv):
         tensors=tensors_to_log, every_n_iter=50)
 
     # Train the model
-    for i in range(100):
-        print("Loop {}".format(i))
-        train_data, train_labels = get_training_batch(100)
-        train_input_fn = tf.estimator.inputs.numpy_input_fn(
+    #for i in range(200):
+    for i in range(1):
+    	print("Loop {}".format(i))
+	#train_data, train_labels = get_training_batch(300)
+	train_data, train_labels = get_eval_data()
+	train_input_fn = tf.estimator.inputs.numpy_input_fn(
             x={"x": train_data},
             y=train_labels,
-            batch_size=25,
+            batch_size=30,
             num_epochs=None,
             shuffle=True)
         classifier.train(
             input_fn=train_input_fn,
-            steps=100,
+            steps=1000,
             hooks=[logging_hook])
 
 

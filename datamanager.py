@@ -28,10 +28,12 @@ def get_training_batch(size):
 		#	img = np.asarray(Image.open(screenshot_path).convert('L').resize((400, 400), Image.ANTIALIAS))
 			img = np.asarray(Image.open(screenshot_path))
 			img = img.flatten().astype(np.float32)
-
+			img -= img.min()
+			img /= float(img.max())
+			
 			images = np.append(images, [img], axis=0)
 			labels.append(train_data[screenshot_path])
-
+		print("\n LABELS: {} \n".format(labels))
 		return (images, np.asarray(labels, dtype=np.int32))
 
 
@@ -49,6 +51,8 @@ def get_eval_data():
 		#	img = np.asarray(Image.open(screenshot_path).convert('L').resize((400, 400), Image.ANTIALIAS))
 			img = np.asarray(Image.open(screenshot_path))
 			img = img.flatten().astype(np.float32)
+			img -= img.min()
+			img /= float(img.max())
 
 			images = np.append(images, [img], axis=0)
 			labels.append(test_data[screenshot_path])
@@ -72,6 +76,8 @@ def eval_data_batches(num_batches):
 			#	img = np.asarray(Image.open(screenshot_path).convert('L').resize((400, 400), Image.ANTIALIAS))
 				img = np.asarray(Image.open(screenshot_path))
 				img = img.flatten().astype(np.float32)
+				img -= img.min()
+				img /= float(img.max())
 
 				images = np.append(images, [img], axis=0)
 				labels.append(test_data[screenshot_path])
