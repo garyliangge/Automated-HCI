@@ -62,13 +62,13 @@ def cnn_model_fn(features, labels, mode):
     # Densely connected layer with 2048 neurons
     # Input Tensor Shape: [batch_size, 100 * 100 * 32]
     # Output Tensor Shape: [batch_size, 2048]
-    dense1 = tf.layers.dense(inputs=pool2_flat, units=2048, activation=tf.nn.relu)
+    dense1 = tf.layers.dense(inputs=pool2_flat, units=1024, activation=tf.nn.relu)
 
     # Dense Layer
     # Densely connected layer with 2048 neurons
     # Input Tensor Shape: [batch_size, 2048]
     # Output Tensor Shape: [batch_size, 2048]
-    dense2 = tf.layers.dense(inputs=dense1, units=2048, activation=tf.nn.relu)
+    dense2 = tf.layers.dense(inputs=dense1, units=1024, activation=tf.nn.relu)
 
     # Add dropout operation; 0.8 probability that element will be kept
     dropout = tf.layers.dropout(
@@ -77,7 +77,7 @@ def cnn_model_fn(features, labels, mode):
     # Logits layer
     # Input Tensor Shape: [batch_size, 1024]
     # Output Tensor Shape: [batch_size, 3]
-    logits = tf.layers.dense(inputs=dropout, units=3)
+    logits = tf.layers.dense(inputs=dropout, units=4)
 
     predictions = {
         # Generate predictions (for PREDICT and EVAL mode)
@@ -95,7 +95,7 @@ def cnn_model_fn(features, labels, mode):
 
     # Configure the Training Op (for TRAIN mode)
     if mode == tf.estimator.ModeKeys.TRAIN:
-        optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.001)
+        optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.01)
         train_op = optimizer.minimize(
             loss=loss,
             global_step=tf.train.get_global_step())
@@ -122,18 +122,18 @@ def main(unused_argv):
         tensors=tensors_to_log, every_n_iter=50)
 
     # Train the model
-    for i in range(10):
+    for i in range(100):
         print("Loop {}".format(i))
-        train_data, train_labels = get_training_batch(1000)
+        train_data, train_labels = get_training_batch(100)
         train_input_fn = tf.estimator.inputs.numpy_input_fn(
             x={"x": train_data},
             y=train_labels,
-            batch_size=100,
+            batch_size=25,
             num_epochs=None,
             shuffle=True)
         mnist_classifier.train(
             input_fn=train_input_fn,
-            steps=1000,
+            steps=100,
             hooks=[logging_hook])
 
 

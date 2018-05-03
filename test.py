@@ -38,7 +38,7 @@ def main(unused_argv):
             accuracies.append(eval_results['accuracy'])
             print(eval_results)
 
-        print("OVRALL ACCURACY: {}".format(sum(accuracies) / float(len(accuracies))))
+        print("OVERALL ACCURACY: {}".format(sum(accuracies) / float(len(accuracies))))
 
     else:
         # Load training and eval data
@@ -61,7 +61,7 @@ def main(unused_argv):
 
 
 def label_counts(labels):
-    counts = [0, 0, 0]
+    counts = [0, 0, 0, 0]
     for label in labels:
         counts[label] += 1
     print("Label counts: {}".format(counts))

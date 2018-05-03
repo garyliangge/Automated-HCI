@@ -4,6 +4,7 @@ import numpy as np
 from os import listdir
 from os.path import isfile, isdir, join
 from PIL import Image
+from test import label_counts
 
 data_path = './filtered_traces/'
 
@@ -55,7 +56,12 @@ def generate_and_save_labels():
 						elif len(d[key]) == 1:
 							categories[resize_path] = 1
 						else:
-							categories[resize_path] = 2
+							xd = abs(d[key][0][0] - d[key][-1][0])
+							yd = abs(d[key][0][1] - d[key][-1][1])
+							if xd > yd:
+								categories[resize_path] = 2
+							else:
+								categories[resize_path] = 3
 
 	# Save categories in root-level JSON
 	category_path = "./categories.json"
@@ -63,6 +69,7 @@ def generate_and_save_labels():
 		out.write(json.dumps(categories))
 		print("Processed {} samples".format(str(count)))
 		print("Labels generated at {}".format(category_path))
+		label_counts(categories.values())
 
 
 if __name__ == '__main__':
