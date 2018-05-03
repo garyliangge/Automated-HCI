@@ -61,7 +61,7 @@ def eval_data_batches(num_batches):
 		TEST_SIZE = len(test_data)
 
 		for i in range(num_batches):
-			keys = list(test_data.keys())[i*TEST_SIZE//num_batches:(i+1)*TEST_SIZE//num_batches]
+			keys = list(test_data.keys())[i*TEST_SIZE//num_batches : (i+1)*TEST_SIZE//num_batches]
 			images = np.empty((0, 400*400)).astype(np.float32)
 			labels = []
 

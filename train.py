@@ -112,7 +112,7 @@ def cnn_model_fn(features, labels, mode):
 
 def main(unused_argv):
     # Create the Estimator
-    mnist_classifier = tf.estimator.Estimator(
+    classifier = tf.estimator.Estimator(
         model_fn=cnn_model_fn, model_dir="./convnet_model")
 
     # Set up logging for predictions
@@ -131,7 +131,7 @@ def main(unused_argv):
             batch_size=25,
             num_epochs=None,
             shuffle=True)
-        mnist_classifier.train(
+        classifier.train(
             input_fn=train_input_fn,
             steps=100,
             hooks=[logging_hook])
