@@ -61,31 +61,44 @@ def cnn_model_fn(features, labels, mode):
     # Output Tensor Shape: [batch_size, 100, 100, 64]
     conv3 = tf.layers.conv2d(
         inputs=pool2,
-        filters=64,
+        filters=96,
         kernel_size=[10, 10],
         padding="same",
         activation=tf.nn.relu)
 
+    # Pooling Layer #3
+    # Second max pooling layer with a 4x4 filter and stride of 4
+    # Input Tensor Shape: [batch_size, 100, 100, 96]
+    # Output Tensor Shape: [batch_size, 25, 25, 96]
+    pool3 = tf.layers.max_pooling2d(inputs=conv3, pool_size=[4, 4], strides=4)
+
+
     # Flatten tensor into a batch of vectors
-    # Input Tensor Shape: [batch_size, 100, 100, 64]
-    # Output Tensor Shape: [batch_size, 100 * 100 * 64]
-    conv3_flat = tf.reshape(conv3, [-1, 100 * 100 * 64])
+    # Input Tensor Shape: [batch_size, 25, 25, 96]
+    # Output Tensor Shape: [batch_size, 25 * 25 * 96]
+    pool3_flat = tf.reshape(pool3, [-1, 25 * 25 * 96])
 
     # Dense Layer
     # Densely connected layer with 1024 neurons
-    # Input Tensor Shape: [batch_size, 100 * 100 * 32]
+    # Input Tensor Shape: [batch_size, 25 * 25 * 96]
     # Output Tensor Shape: [batch_size, 1024]
-    dense1 = tf.layers.dense(inputs=conv3_flat, units=1024, activation=tf.nn.leaky_relu)
+    dense1 = tf.layers.dense(inputs=pool3_flat, units=1024, activation=tf.nn.relu)
 
     # Dense Layer
     # Densely connected layer with 512 neurons
     # Input Tensor Shape: [batch_size, 1024]
     # Output Tensor Shape: [batch_size, 512]
-    dense2 = tf.layers.dense(inputs=dense1, units=512, activation=tf.nn.leaky_relu)
+    dense2 = tf.layers.dense(inputs=dense1, units=512, activation=tf.nn.relu)
 
-    # Add dropout operation; 0.9 probability that element will be kept
+    # Dense Layer
+    # Densely connected layer with 512 neurons
+    # Input Tensor Shape: [batch_size, 512]
+    # Output Tensor Shape: [batch_size, 256]
+    dense3 = tf.layers.dense(inputs=dense2, units=256, activation=tf.nn.relu)
+
+    # Add dropout operation; 1.0 probability that element will be kept
     dropout = tf.layers.dropout(
-        inputs=dense2, rate=0.1, training=mode == tf.estimator.ModeKeys.TRAIN)
+        inputs=dense3, rate=0.0, training=mode == tf.estimator.ModeKeys.TRAIN)
 
     # Logits layer
     # Input Tensor Shape: [batch_size, 512]
