@@ -30,13 +30,13 @@ def get_training_batch(size):
 			img = img.flatten().astype(np.float32)
 
 			label = train_data[screenshot_path]
-			labels = [0]*7
-			labels[train_data[screenshot_path]] = 1.0
+			label_vec = [0]*7
+			label_vec[train_data[screenshot_path]] = 1.0
 
 			images = np.append(images, [img], axis=0)
-			labels = np.append(labels, [label], axis=0)
+			labels = np.append(labels, [np.asarray(label_vec, dtype=np.int32)], axis=0)
 
-		return (images, np.asarray(labels, dtype=np.int32))
+		return (images, labels)
 
 
 """Returns a label (0, 1, 2) and an image in a numpy ndarray."""
@@ -55,13 +55,13 @@ def get_eval_data():
 			img = img.flatten().astype(np.float32)
 
 			label = train_data[screenshot_path]
-			labels = [0]*7
-			labels[train_data[screenshot_path]] = 1.0
+			label_vec = [0]*7
+			label_vec[train_data[screenshot_path]] = 1.0
 
 			images = np.append(images, [img], axis=0)
-			labels = np.append(labels, [label], axis=0)
+			labels = np.append(labels, [np.asarray(label_vec, dtype=np.int32)], axis=0)
 
-		return (images, np.asarray(labels, dtype=np.int32))
+		return (images, labels)
 
 """Returns a generator function for smaller batches."""
 def eval_data_batches(num_batches):
@@ -83,12 +83,12 @@ def eval_data_batches(num_batches):
 				img = img.flatten().astype(np.float32)
 
 				label = train_data[screenshot_path]
-				labels = [0]*7
-				labels[train_data[screenshot_path]] = 1.0
+				label_vec = [0]*7
+				label_vec[train_data[screenshot_path]] = 1.0
 
 				images = np.append(images, [img], axis=0)
-				labels = np.append(labels, [label], axis=0)
+				labels = np.append(labels, [np.asarray(label_vec, dtype=np.int32)], axis=0)
 
-			yield (images, np.asarray(labels, dtype=np.int32))
+			yield (images, labels)
 
 
