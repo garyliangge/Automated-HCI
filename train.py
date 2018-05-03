@@ -18,7 +18,7 @@ def cnn_model_fn(features, labels, mode):
     """Model function for CNN."""
     # Input Layer
     # Reshape X to 4-D tensor: [batch_size, width, height, channels]
-    # Our images are 500x500 pixels, and have three color channels
+    # Our images are 400x400 pixels, and have one color channel (greyscale)
     input_layer = tf.reshape(features["x"], [-1, 400, 400, 1])
 
     # Convolutional Layer #1
@@ -61,22 +61,22 @@ def cnn_model_fn(features, labels, mode):
     # Output Tensor Shape: [batch_size, 100, 100, 64]
     conv3 = tf.layers.conv2d(
         inputs=pool2,
-        filters=96,
+        filters=32,
         kernel_size=[10, 10],
         padding="same",
         activation=tf.nn.relu)
 
     # Pooling Layer #3
     # Second max pooling layer with a 4x4 filter and stride of 4
-    # Input Tensor Shape: [batch_size, 100, 100, 96]
-    # Output Tensor Shape: [batch_size, 25, 25, 96]
+    # Input Tensor Shape: [batch_size, 100, 100, 32]
+    # Output Tensor Shape: [batch_size, 25, 25, 32]
     pool3 = tf.layers.max_pooling2d(inputs=conv3, pool_size=[4, 4], strides=4)
 
 
     # Flatten tensor into a batch of vectors
-    # Input Tensor Shape: [batch_size, 25, 25, 96]
-    # Output Tensor Shape: [batch_size, 25 * 25 * 96]
-    pool3_flat = tf.reshape(pool3, [-1, 25 * 25 * 96])
+    # Input Tensor Shape: [batch_size, 25, 25, 32]
+    # Output Tensor Shape: [batch_size, 25 * 25 * 32]
+    pool3_flat = tf.reshape(pool3, [-1, 25 * 25 * 32])
 
     # Dense Layer
     # Densely connected layer with 1024 neurons
@@ -96,14 +96,18 @@ def cnn_model_fn(features, labels, mode):
     # Output Tensor Shape: [batch_size, 256]
     dense3 = tf.layers.dense(inputs=dense2, units=256, activation=tf.nn.relu)
 
-    # Add dropout operation; 1.0 probability that element will be kept
-    dropout = tf.layers.dropout(
-        inputs=dense3, rate=0.0, training=mode == tf.estimator.ModeKeys.TRAIN)
+    # # Add dropout operation; 1.0 probability that element will be kept
+    # dropout = tf.layers.dropout(
+    #     inputs=dense3, rate=0.0, training=mode == tf.estimator.ModeKeys.TRAIN)
 
     # Logits layer
     # Input Tensor Shape: [batch_size, 512]
     # Output Tensor Shape: [batch_size, 7]
-    logits = tf.layers.dense(inputs=dropout, units=7)
+    logits = tf.layers.dense(inputs=dense3, units=7)
+
+    # Avoid NaN loss error by perturbing logits
+    epsilon = tf.constant(1e-8)
+    logits = logits + epsilon 
 
     predictions = {
         # Generate predictions (for PREDICT and EVAL mode)
