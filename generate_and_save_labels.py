@@ -84,6 +84,7 @@ def generate_and_save_labels():
 	test = {}
 	train = {}
 	testcounts = defaultdict(int)
+	traincounts = defaultdict(int)
 	
 	keys = list(categories.keys())
 	shuffle(keys)
@@ -91,8 +92,9 @@ def generate_and_save_labels():
 		if testcounts[categories[key]] < TEST_SIZE/4:
 			test[key] = categories[key]
 			testcounts[categories[key]] += 1
-		else:
+		elif traincounts[categories[key]] < 10000:
 			train[key] = categories[key]
+			traincounts[categories[key]] += 1
 
 	# Save categories in root-level JSON
 	category_path = "./data.json"
@@ -100,7 +102,10 @@ def generate_and_save_labels():
 		out.write(json.dumps(((train, test))))
 		print("Processed {} samples".format(str(count)))
 		print("Labels generated at {}".format(category_path))
-		label_counts(categories.values())
+		print("\nTrain label counts:")
+		label_counts(train.values())
+		pirnt("\nTest lable counts:")
+		label_counts(test.values())
 
 
 if __name__ == '__main__':
