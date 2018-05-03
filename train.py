@@ -53,22 +53,35 @@ def cnn_model_fn(features, labels, mode):
     # Output Tensor Shape: [batch_size, 100, 100, 64]
     pool2 = tf.layers.max_pooling2d(inputs=conv2, pool_size=[2, 2], strides=2)
 
+
+    # Convolutional Layer #3
+    # Computes 64 features using a 10x10 filter.
+    # Padding is added to preserve width and height.
+    # Input Tensor Shape: [batch_size, 200, 200, 64]
+    # Output Tensor Shape: [batch_size, 200, 200, 64]
+    conv3 = tf.layers.conv2d(
+        inputs=pool1,
+        filters=64,
+        kernel_size=[10, 10],
+        padding="same",
+        activation=tf.nn.relu)
+
     # Flatten tensor into a batch of vectors
     # Input Tensor Shape: [batch_size, 100, 100, 64]
     # Output Tensor Shape: [batch_size, 100 * 100 * 64]
-    pool2_flat = tf.reshape(pool2, [-1, 100 * 100 * 64])
+    conv3_flat = tf.reshape(pool2, [-1, 100 * 100 * 64])
 
     # Dense Layer
-    # Densely connected layer with 2048 neurons
+    # Densely connected layer with 1024 neurons
     # Input Tensor Shape: [batch_size, 100 * 100 * 32]
-    # Output Tensor Shape: [batch_size, 2048]
-    dense1 = tf.layers.dense(inputs=pool2_flat, units=1024, activation=tf.nn.relu)
+    # Output Tensor Shape: [batch_size, 1024]
+    dense1 = tf.layers.dense(inputs=conv3_flat, units=1024, activation=tf.nn.leaky_relu)
 
     # Dense Layer
-    # Densely connected layer with 2048 neurons
-    # Input Tensor Shape: [batch_size, 2048]
-    # Output Tensor Shape: [batch_size, 2048]
-    dense2 = tf.layers.dense(inputs=dense1, units=1024, activation=tf.nn.relu)
+    # Densely connected layer with 512 neurons
+    # Input Tensor Shape: [batch_size, 1024]
+    # Output Tensor Shape: [batch_size, 512]
+    dense2 = tf.layers.dense(inputs=dense1, units=512, activation=tf.nn.leaky_relu)
 
     # Add dropout operation; 0.8 probability that element will be kept
     dropout = tf.layers.dropout(
