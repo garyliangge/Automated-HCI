@@ -70,8 +70,11 @@ def generate_and_save_labels():
 	test = {}
 	train = {}
 	testcounts = defaultdict(int)
-	for key in shuffle(categories.keys()):
-		if testcounts(categories[key]) < TEST_SIZE/4:
+	
+	keys = list(categories.keys())
+	shuffle(keys)
+	for key in keys:
+		if testcounts[categories[key]] < TEST_SIZE/4:
 			test[key] = categories[key]
 		else:
 			train[key] = categories[key]
