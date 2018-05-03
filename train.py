@@ -106,7 +106,7 @@ def cnn_model_fn(features, labels, mode):
     logits = tf.layers.dense(inputs=dense3, units=7)
 
     # Avoid NaN loss error by perturbing logits
-    epsilon = tf.constant(1e-8)
+    epsilon = tf.constant(1e-6)
     logits = logits + epsilon 
 
     predictions = {
@@ -125,7 +125,8 @@ def cnn_model_fn(features, labels, mode):
 
     # Configure the Training Op (for TRAIN mode)
     if mode == tf.estimator.ModeKeys.TRAIN:
-        optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.04)
+        # optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.04)
+        optimizer = tf.train.AdamOptimizer(learning_rate=0.04)
         train_op = optimizer.minimize(
             loss=loss,
             global_step=tf.train.get_global_step())
