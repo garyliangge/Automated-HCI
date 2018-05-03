@@ -5,18 +5,18 @@ from os import listdir
 from os.path import isfile, isdir, join
 from PIL import Image
 
-category_path = './categories.json'
-TEST_SIZE = 2000
+category_path = './data.json'
+
+
 
 """Returns a label (0, 1, 2) and an image in a numpy ndarray.
-
 For now, images are resized to 400 * 400 and converted to greyscale.
 """
 def get_training_batch(size):
 
 	with open(category_path) as json_data:
-		categories = json.load(json_data)
-		keys = list(categories.keys())[TEST_SIZE:]
+		train_data, test_data = json.load(json_data)
+		keys = list(train_data.keys())
 
 		images = np.empty((0, 400*400)).astype(np.float32)
 		labels = []
@@ -29,7 +29,7 @@ def get_training_batch(size):
 			img = img.flatten().astype(np.float32)
 
 			images = np.append(images, [img], axis=0)
-			labels.append(categories[screenshot_path])
+			labels.append(train_data[screenshot_path])
 
 		return (images, np.asarray(labels, dtype=np.int32))
 
@@ -38,8 +38,8 @@ def get_training_batch(size):
 def get_eval_data():
 
 	with open(category_path) as json_data:
-		categories = json.load(json_data)
-		keys = list(categories.keys())[:TEST_SIZE]
+		train_data, test_data = json.load(json_data)
+		keys = list(test_data.keys())
 
 		images = np.empty((0, 400*400)).astype(np.float32)
 		labels = []
@@ -50,17 +50,18 @@ def get_eval_data():
 			img = img.flatten().astype(np.float32)
 
 			images = np.append(images, [img], axis=0)
-			labels.append(categories[screenshot_path])
+			labels.append(test_data[screenshot_path])
 
 		return (images, np.asarray(labels, dtype=np.int32))
 
 """Returns a generator function for smaller batches."""
 def eval_data_batches(num_batches):
 	with open(category_path) as json_data:
-		categories = json.load(json_data)
+		train_data, test_data = json.load(json_data)
+		TEST_SIZE = len(test_data)
 
 		for i in range(num_batches):
-			keys = list(categories.keys())[i*TEST_SIZE//num_batches:(i+1)*TEST_SIZE//num_batches]
+			keys = list(test_data.keys())[i*TEST_SIZE//num_batches:(i+1)*TEST_SIZE//num_batches]
 			images = np.empty((0, 400*400)).astype(np.float32)
 			labels = []
 
@@ -70,7 +71,7 @@ def eval_data_batches(num_batches):
 				img = img.flatten().astype(np.float32)
 
 				images = np.append(images, [img], axis=0)
-				labels.append(categories[screenshot_path])
+				labels.append(test_data[screenshot_path])
 
 			yield (images, np.asarray(labels, dtype=np.int32))
 

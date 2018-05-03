@@ -4,9 +4,13 @@ import numpy as np
 from os import listdir
 from os.path import isfile, isdir, join
 from PIL import Image
+from random import shuffle
+from collections import defaultdict
 from test import label_counts
 
 data_path = './filtered_traces/'
+TEST_SIZE = 2000
+
 
 
 """Generate category labels for our screenshots.
@@ -63,10 +67,19 @@ def generate_and_save_labels():
 							else:
 								categories[resize_path] = 3
 
+	test = {}
+	train = {}
+	testcounts = defaultdict(int)
+	for key in shuffle(categories.keys()):
+		if testcounts(categories[key]) < TEST_SIZE/4:
+			test[key] = categories[key]
+		else:
+			train[key] = categories[key]
+
 	# Save categories in root-level JSON
-	category_path = "./categories.json"
+	category_path = "./data.json"
 	with open(category_path, 'w') as out:
-		out.write(json.dumps(categories))
+		out.write(json.dumps(((test, train))))
 		print("Processed {} samples".format(str(count)))
 		print("Labels generated at {}".format(category_path))
 		label_counts(categories.values())
