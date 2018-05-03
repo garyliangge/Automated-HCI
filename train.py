@@ -57,10 +57,10 @@ def cnn_model_fn(features, labels, mode):
     # Convolutional Layer #3
     # Computes 64 features using a 10x10 filter.
     # Padding is added to preserve width and height.
-    # Input Tensor Shape: [batch_size, 200, 200, 64]
-    # Output Tensor Shape: [batch_size, 200, 200, 64]
+    # Input Tensor Shape: [batch_size, 100, 100, 64]
+    # Output Tensor Shape: [batch_size, 100, 100, 64]
     conv3 = tf.layers.conv2d(
-        inputs=pool1,
+        inputs=pool2,
         filters=64,
         kernel_size=[10, 10],
         padding="same",
@@ -69,7 +69,7 @@ def cnn_model_fn(features, labels, mode):
     # Flatten tensor into a batch of vectors
     # Input Tensor Shape: [batch_size, 100, 100, 64]
     # Output Tensor Shape: [batch_size, 100 * 100 * 64]
-    conv3_flat = tf.reshape(pool2, [-1, 100 * 100 * 64])
+    conv3_flat = tf.reshape(conv3, [-1, 100 * 100 * 64])
 
     # Dense Layer
     # Densely connected layer with 1024 neurons
@@ -83,12 +83,12 @@ def cnn_model_fn(features, labels, mode):
     # Output Tensor Shape: [batch_size, 512]
     dense2 = tf.layers.dense(inputs=dense1, units=512, activation=tf.nn.leaky_relu)
 
-    # Add dropout operation; 0.8 probability that element will be kept
+    # Add dropout operation; 0.9 probability that element will be kept
     dropout = tf.layers.dropout(
-        inputs=dense2, rate=0.2, training=mode == tf.estimator.ModeKeys.TRAIN)
+        inputs=dense2, rate=0.1, training=mode == tf.estimator.ModeKeys.TRAIN)
 
     # Logits layer
-    # Input Tensor Shape: [batch_size, 1024]
+    # Input Tensor Shape: [batch_size, 512]
     # Output Tensor Shape: [batch_size, 7]
     logits = tf.layers.dense(inputs=dropout, units=7)
 
