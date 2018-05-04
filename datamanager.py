@@ -6,7 +6,7 @@ from os.path import isfile, isdir, join
 from PIL import Image
 from random import shuffle
 
-category_path = './data.json'
+category_path = './data_simplified.json'
 
 
 

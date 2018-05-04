@@ -20,7 +20,7 @@ def main(unused_argv):
     accuracies = []
     # Create the Estimator
     classifier = tf.estimator.Estimator(
-        model_fn=cnn_model_fn, model_dir="./convnet_model")
+        model_fn=cnn_model_fn, model_dir="./convnet_model_simplified")
 
     if BATCHING:
 

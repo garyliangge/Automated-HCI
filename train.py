@@ -10,6 +10,7 @@ from datamanager import *
 
 
 tf.logging.set_verbosity(tf.logging.INFO)
+NUM_CLASSES = 6
 
 
 """A CNN model based on the tensorflow MNIST tutorial."""
@@ -102,8 +103,8 @@ def cnn_model_fn(features, labels, mode):
 
 	# Logits layer
 	# Input Tensor Shape: [batch_size, 512]
-	# Output Tensor Shape: [batch_size, 7]
-	logits = tf.layers.dense(inputs=dropout, units=7)
+	# Output Tensor Shape: [batch_size, 6]
+	logits = tf.layers.dense(inputs=dropout, units=NUM_CLASSES)
 
 	# Avoid NaN loss error by perturbing logits
 	epsilon = tf.constant(1e-8)
@@ -121,14 +122,14 @@ def cnn_model_fn(features, labels, mode):
 		return tf.estimator.EstimatorSpec(mode=mode, predictions=predictions)
 
 	# Calculate Loss (for both TRAIN and EVAL modes)
-	onehot_labels = tf.one_hot(indices=tf.cast(labels, tf.int32), depth=7)
+	onehot_labels = tf.one_hot(indices=tf.cast(labels, tf.int32), depth=NUM_CLASSES)
 	loss = tf.losses.softmax_cross_entropy(
 		onehot_labels=onehot_labels, logits=logits)
 
 	# Configure the Training Op (for TRAIN mode)
 	if mode == tf.estimator.ModeKeys.TRAIN:
 		# optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.04)
-		optimizer = tf.train.AdamOptimizer(learning_rate=0.0002)
+		optimizer = tf.train.AdamOptimizer(learning_rate=0.001)
 		train_op = optimizer.minimize(
 			loss=loss,
 			global_step=tf.train.get_global_step())
@@ -146,7 +147,7 @@ def cnn_model_fn(features, labels, mode):
 def main(unused_argv):
 	# Create the Estimator
 	classifier = tf.estimator.Estimator(
-		model_fn=cnn_model_fn, model_dir="./convnet_model")
+		model_fn=cnn_model_fn, model_dir="./convnet_model_simplified")
 
 	# Set up logging for predictions
 	# Log the values in the "Softmax" tensor with label "probabilities"
