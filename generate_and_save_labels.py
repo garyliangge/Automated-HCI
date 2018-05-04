@@ -104,7 +104,7 @@ def generate_and_save_labels():
 		print("Labels generated at {}".format(category_path))
 		print("\nTrain label counts:")
 		label_counts(train.values())
-		pirnt("\nTest lable counts:")
+		print("\nTest lable counts:")
 		label_counts(test.values())
 
 

@@ -128,7 +128,7 @@ def cnn_model_fn(features, labels, mode):
 	# Configure the Training Op (for TRAIN mode)
 	if mode == tf.estimator.ModeKeys.TRAIN:
 		# optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.04)
-		optimizer = tf.train.AdamOptimizer(learning_rate=0.001)
+		optimizer = tf.train.AdamOptimizer(learning_rate=0.0002)
 		train_op = optimizer.minimize(
 			loss=loss,
 			global_step=tf.train.get_global_step())
@@ -152,10 +152,10 @@ def main(unused_argv):
 	# Log the values in the "Softmax" tensor with label "probabilities"
 	tensors_to_log = {"probabilities": "softmax_tensor"}
 	logging_hook = tf.train.LoggingTensorHook(
-		tensors=tensors_to_log, every_n_iter=50)
+		tensors=tensors_to_log, every_n_iter=20)
 
 	# Train the model
-	for i in range(200):
+	for i in range(1000):
 	#for train_data, train_labels in eval_data_batches(5):
 		print("Loop {}".format(i))
 		train_data, train_labels = get_training_batch(300)

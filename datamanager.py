@@ -29,7 +29,8 @@ def get_training_batch(size):
 			img = np.asarray(Image.open(screenshot_path))
 			img = img.flatten().astype(np.float32)
 			img -= img.min()
-			img /= float(img.max())
+			if img.max():
+				img /= float(img.max())
 			
 			images = np.append(images, [img], axis=0)
 			labels.append(train_data[screenshot_path])
@@ -68,7 +69,7 @@ def eval_data_batches(num_batches):
 		TEST_SIZE = len(test_data)
 
 		for i in range(num_batches):
-			keys = list(test_data.keys())[i*TEST_SIZE//num_batches : (i+1)*TEST_SIZE//num_batches]
+			keys = data_keys[i*TEST_SIZE//num_batches : (i+1)*TEST_SIZE//num_batches]
 			images = np.empty((0, 400*400)).astype(np.float32)
 			labels = []
 
