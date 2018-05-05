@@ -60,27 +60,26 @@ def generate_and_save_labels():
 							img.save(resize_path)
 
 						if len(d[key]) == 0:
-							# categories[resize_path] = 0
-							pass
+							categories[resize_path] = 0
 						elif len(d[key]) == 1:
 							x, y = d[key][0]
 							if x > 0.5:
 								if y > 0.5:
-									categories[resize_path] = 0
-								else:
 									categories[resize_path] = 1
+								else:
+									categories[resize_path] = 2
 							else:
 								if y > 0.5:
-									categories[resize_path] = 2
-								else:
 									categories[resize_path] = 3
+								else:
+									categories[resize_path] = 4
 						elif len(d[key]) > 1:
 							xd = abs(d[key][0][0] - d[key][-1][0])
 							yd = abs(d[key][0][1] - d[key][-1][1])
 							if xd > yd:
-								categories[resize_path] = 4
-							else:
 								categories[resize_path] = 5
+							else:
+								categories[resize_path] = 6
 
 	test = {}
 	train = {}
@@ -98,7 +97,7 @@ def generate_and_save_labels():
 			traincounts[categories[key]] += 1
 
 	# Save categories in root-level JSON
-	category_path = "./data_simplified.json"
+	category_path = "./data.json"
 	with open(category_path, 'w') as out:
 		out.write(json.dumps(((train, test))))
 		print("Processed {} samples".format(str(count)))

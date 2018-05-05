@@ -23,7 +23,7 @@ def main(unused_argv):
     accuracies = []
     # Create the Estimator
     classifier = tf.estimator.Estimator(
-        model_fn=cnn_model_fn, model_dir="./convnet_model_simplified")
+        model_fn=cnn_model_fn, model_dir="./convnet_model")
 
     if BATCHING:
 
@@ -38,15 +38,15 @@ def main(unused_argv):
                 num_epochs=1,
                 shuffle=False)
             eval_results = classifier.evaluate(input_fn=eval_input_fn)
-            predict_tensors = classifier.predict(input_fn=eval_input_fn)
+            predict_tensors = list(classifier.predict(input_fn=eval_input_fn))
             predictions = [c["classes"] for c in predict_tensors]
-            probabilities = [c["probabilities"] for c in predict_tensors]
-            print("Probabiltiies {} of type {}".format(probabilities, type(probabilities)))
+            probabilities = [c["probabilities"].astype(np.float64).tolist() for c in predict_tensors]
+            #print("Probabiltiies {} of type {}".format(probabilities, type(probabilities)))
             
             con = tf.confusion_matrix(labels=eval_labels, predictions=predictions, num_classes=7, dtype=tf.int32)
             with tf.Session():
                 total_con += np.asarray(tf.Tensor.eval(con,feed_dict=None, session=None))
-            accuracies.append(eval_results['accuracy'])
+            accuracies.append(float(eval_results['accuracy']))
             print(eval_results)
         
         print(total_con)
@@ -59,7 +59,7 @@ def main(unused_argv):
 
         eval_data_path = './eval_data.json'
         with open(eval_data_path, 'w') as out:
-            out.write(json.dumps(total_con.tolist()))
+            out.write(json.dumps(eval_data))
  
     else:
         # Load training and eval data

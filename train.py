@@ -10,7 +10,7 @@ from datamanager import *
 
 
 tf.logging.set_verbosity(tf.logging.INFO)
-NUM_CLASSES = 6
+NUM_CLASSES = 7
 
 
 """A CNN model based on the tensorflow MNIST tutorial."""
@@ -148,7 +148,7 @@ def cnn_model_fn(features, labels, mode):
 def main(unused_argv):
 	# Create the Estimator
 	classifier = tf.estimator.Estimator(
-		model_fn=cnn_model_fn, model_dir="./convnet_model_simplified")
+		model_fn=cnn_model_fn, model_dir="./convnet_model")
 
 	# Set up logging for predictions
 	# Log the values in the "Softmax" tensor with label "probabilities"
