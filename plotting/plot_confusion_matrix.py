@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import json
 
 
-eval_data_path = './eval_data.json'
+eval_data_path = '../eval_data.json'
 
 
 with open(eval_data_path) as json_data:
