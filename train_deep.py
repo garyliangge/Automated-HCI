@@ -212,7 +212,7 @@ def main(unused_argv):
 			shuffle=True)
 		classifier.train(
 			input_fn=train_input_fn,
-			steps=50,
+			steps=20,
 			hooks=[logging_hook])
 
 
