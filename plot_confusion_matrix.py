@@ -35,7 +35,7 @@ with open(eval_data_path) as json_data:
                         verticalalignment='center')
 
     cb = fig.colorbar(res)
-    alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    alphabet = '0123456'
     plt.xticks(range(width), alphabet[:width])
     plt.yticks(range(height), alphabet[:height])
     plt.savefig('confusion_matrix.png', format='png')

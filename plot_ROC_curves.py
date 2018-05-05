@@ -30,9 +30,9 @@ with open(eval_data_path) as json_data:
     plt.ylim([0.0, 1.05])
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
-    plt.title('Receiver operating characteristic example')
+    plt.title('One-vs-All Gesture Classification ROC Curves')
     plt.legend(loc="lower right")
-    plt.show()
+    plt.savefig('ROC_curves.png', format='png')
 
 
 
