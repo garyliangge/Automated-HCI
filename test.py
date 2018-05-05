@@ -38,18 +38,27 @@ def main(unused_argv):
                 num_epochs=1,
                 shuffle=False)
             eval_results = classifier.evaluate(input_fn=eval_input_fn)
-            predictions = [c["classes"] for c in classifier.predict(input_fn=eval_input_fn)]
+            predict_tensors = classifier.predict(input_fn=eval_input_fn)
+            predictions = [c["classes"] for c in predict_tensors]
+            probabilities = [c["probabilities"] for c in predict_tensors]
+            print("Probabiltiies {} of type {}".format(probabilities, type(probabilities)))
+            
             con = tf.confusion_matrix(labels=eval_labels, predictions=predictions, num_classes=7, dtype=tf.int32)
             with tf.Session():
                 total_con += np.asarray(tf.Tensor.eval(con,feed_dict=None, session=None))
             accuracies.append(eval_results['accuracy'])
             print(eval_results)
         
-
         print(total_con)
         print("OVERALL ACCURACY: {}".format(sum(accuracies) / float(len(accuracies))))
-        confusion_path = './confusion.json'
-        with open(confusion_path, 'w') as out:
+
+        eval_data = {}
+        eval_data["confusion_matrix"] = total_con.tolist()
+        eval_data["accuracies"] = accuracies
+        eval_data["probabilities"] = probabilities
+
+        eval_data_path = './eval_data.json'
+        with open(eval_data_path, 'w') as out:
             out.write(json.dumps(total_con.tolist()))
  
     else:
