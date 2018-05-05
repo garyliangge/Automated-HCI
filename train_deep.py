@@ -120,7 +120,7 @@ def cnn_model_fn(features, labels, mode):
 	# Flatten tensor into a batch of vectors
 	# Input Tensor Shape: [batch_size, 25, 25, 128]
 	# Output Tensor Shape: [batch_size, 25 * 25 * 128]
-	pool4_flat = tf.reshape(pool4, [-1, 25 * 25 * 32])
+	pool4_flat = tf.reshape(pool4, [-1, 25 * 25 * 128])
 
 	# Dense Layer
 	# Densely connected layer with 1024 neurons
@@ -172,7 +172,7 @@ def cnn_model_fn(features, labels, mode):
 	# Configure the Training Op (for TRAIN mode)
 	if mode == tf.estimator.ModeKeys.TRAIN:
 		# optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.04)
-		optimizer = tf.train.AdamOptimizer(learning_rate=0.001)
+		optimizer = tf.train.AdamOptimizer(learning_rate=0.0002)
 		train_op = optimizer.minimize(
 			loss=loss,
 			global_step=tf.train.get_global_step())
@@ -212,7 +212,7 @@ def main(unused_argv):
 			shuffle=True)
 		classifier.train(
 			input_fn=train_input_fn,
-			steps=60,
+			steps=50,
 			hooks=[logging_hook])
 
 

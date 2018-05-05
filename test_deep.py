@@ -7,7 +7,7 @@ import json
 import numpy as np
 import tensorflow as tf
 from datamanager import *
-from train import cnn_model_fn
+from train_deep import cnn_model_fn
 
 
 
