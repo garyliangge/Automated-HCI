@@ -143,6 +143,7 @@ def cnn_model_fn(features, labels, mode):
 
 
 
+
 def main(unused_argv):
 	# Create the Estimator
 	classifier = tf.estimator.Estimator(
