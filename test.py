@@ -21,6 +21,7 @@ def main(unused_argv):
     total_con = np.zeros((7,7))
 
     accuracies = []
+    labels = []
     # Create the Estimator
     classifier = tf.estimator.Estimator(
         model_fn=cnn_model_fn, model_dir="./convnet_model")
@@ -47,6 +48,7 @@ def main(unused_argv):
             with tf.Session():
                 total_con += np.asarray(tf.Tensor.eval(con,feed_dict=None, session=None))
             accuracies.append(float(eval_results['accuracy']))
+            labels += eval_labels.astype(int).tolist()
             print(eval_results)
         
         print(total_con)
@@ -56,6 +58,7 @@ def main(unused_argv):
         eval_data["confusion_matrix"] = total_con.tolist()
         eval_data["accuracies"] = accuracies
         eval_data["probabilities"] = probabilities
+        eval_data["labels"] = labels
 
         eval_data_path = './eval_data.json'
         with open(eval_data_path, 'w') as out:
