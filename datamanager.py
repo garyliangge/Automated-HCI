@@ -66,7 +66,7 @@ def eval_data_batches(num_batches):
 		train_data, test_data = json.load(json_data)
 		data_keys = list(test_data.keys())
 		shuffle(data_keys)
-		TEST_SIZE = len(test_data)
+		TEST_SIZE = len(data_keys())
 
 		for i in range(num_batches):
 			keys = data_keys[i*TEST_SIZE//num_batches : (i+1)*TEST_SIZE//num_batches]

@@ -21,6 +21,7 @@ def main(unused_argv):
     total_con = np.zeros((7,7))
 
     accuracies = []
+    probabilities = []
     labels = []
     # Create the Estimator
     classifier = tf.estimator.Estimator(
@@ -41,12 +42,12 @@ def main(unused_argv):
             eval_results = classifier.evaluate(input_fn=eval_input_fn)
             predict_tensors = list(classifier.predict(input_fn=eval_input_fn))
             predictions = [c["classes"] for c in predict_tensors]
-            probabilities = [c["probabilities"].astype(np.float64).tolist() for c in predict_tensors]
-            #print("Probabiltiies {} of type {}".format(probabilities, type(probabilities)))
+            probabilities += [c["probabilities"].astype(np.float64).tolist() for c in predict_tensors]
             
             con = tf.confusion_matrix(labels=eval_labels, predictions=predictions, num_classes=7, dtype=tf.int32)
             with tf.Session():
                 total_con += np.asarray(tf.Tensor.eval(con,feed_dict=None, session=None))
+
             accuracies.append(float(eval_results['accuracy']))
             labels += eval_labels.astype(int).tolist()
             print(eval_results)
