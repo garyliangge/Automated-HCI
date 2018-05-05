@@ -9,7 +9,7 @@ from collections import defaultdict
 from test import label_counts
 
 data_path = './filtered_traces/'
-TEST_SIZE = 2000
+TEST_SIZE = 3500
 
 
 
@@ -89,7 +89,7 @@ def generate_and_save_labels():
 	keys = list(categories.keys())
 	shuffle(keys)
 	for key in keys:
-		if testcounts[categories[key]] < TEST_SIZE/4:
+		if testcounts[categories[key]] < TEST_SIZE/7:
 			test[key] = categories[key]
 			testcounts[categories[key]] += 1
 		elif traincounts[categories[key]] < 10000:
