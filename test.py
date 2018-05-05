@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 # Imports
+import json
 import numpy as np
 import tensorflow as tf
 from datamanager import *
@@ -16,6 +17,8 @@ BATCHING = True
 
 
 def main(unused_argv):
+    
+    total_con = np.zeros((7,7))
 
     accuracies = []
     # Create the Estimator
@@ -35,11 +38,20 @@ def main(unused_argv):
                 num_epochs=1,
                 shuffle=False)
             eval_results = classifier.evaluate(input_fn=eval_input_fn)
+            predictions = [c["classes"] for c in classifier.predict(input_fn=eval_input_fn)]
+            con = tf.confusion_matrix(labels=eval_labels, predictions=predictions, num_classes=7, dtype=tf.int32)
+            with tf.Session():
+                total_con += np.asarray(tf.Tensor.eval(con,feed_dict=None, session=None))
             accuracies.append(eval_results['accuracy'])
             print(eval_results)
+        
 
+        print(total_con)
         print("OVERALL ACCURACY: {}".format(sum(accuracies) / float(len(accuracies))))
-
+        confusion_path = './confusion.json'
+        with open(confusion_path, 'w') as out:
+            out.write(json.dumps(total_con.tolist()))
+ 
     else:
         # Load training and eval data
         eval_data, eval_labels = get_eval_data()
