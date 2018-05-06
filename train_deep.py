@@ -26,7 +26,7 @@ def cnn_model_fn(features, labels, mode):
 	conv1 = tf.layers.conv2d(
 		inputs=input_layer,
 		filters=32,
-		kernel_size=[5, 5],
+		kernel_size=[20, 20],
 		padding="same",
 		activation=tf.nn.leaky_relu)
 
@@ -44,19 +44,7 @@ def cnn_model_fn(features, labels, mode):
 	conv2 = tf.layers.conv2d(
 		inputs=pool1,
 		filters=64,
-		kernel_size=[5, 5],
-		padding="same",
-		activation=tf.nn.leaky_relu)
-
-	# Convolutional Layer #2.5
-	# Computes 64 features using a 5x5 filter.
-	# Padding is added to preserve width and height.
-	# Input Tensor Shape: [batch_size, 200, 200, 64]
-	# Output Tensor Shape: [batch_size, 200, 200, 64]
-	conv2_5 = tf.layers.conv2d(
-		inputs=conv2,
-		filters=64,
-		kernel_size=[5, 5],
+		kernel_size=[10, 10],
 		padding="same",
 		activation=tf.nn.leaky_relu)
 
@@ -64,7 +52,7 @@ def cnn_model_fn(features, labels, mode):
 	# Second max pooling layer with a 2x2 filter and stride of 2
 	# Input Tensor Shape: [batch_size, 200, 200, 64]
 	# Output Tensor Shape: [batch_size, 100, 100, 64]
-	pool2 = tf.layers.max_pooling2d(inputs=conv2_5, pool_size=[2, 2], strides=2)
+	pool2 = tf.layers.max_pooling2d(inputs=conv2, pool_size=[2, 2], strides=2)
 
 
 	# Convolutional Layer #3
@@ -79,23 +67,11 @@ def cnn_model_fn(features, labels, mode):
 		padding="same",
 		activation=tf.nn.leaky_relu)
 
-	# Convolutional Layer #3.5
-	# Computes 64 features using a 10x10 filter.
-	# Padding is added to preserve width and height.
-	# Input Tensor Shape: [batch_size, 100, 100, 64]
-	# Output Tensor Shape: [batch_size, 100, 100, 64]
-	conv3_5 = tf.layers.conv2d(
-		inputs=conv3,
-		filters=64,
-		kernel_size=[10, 10],
-		padding="same",
-		activation=tf.nn.leaky_relu)
-
 	# Pooling Layer #3
 	# Second max pooling layer with a 4x4 filter and stride of 4
 	# Input Tensor Shape: [batch_size, 100, 100, 64]
 	# Output Tensor Shape: [batch_size, 50, 50, 64]
-	pool3 = tf.layers.max_pooling2d(inputs=conv3_5, pool_size=[2, 2], strides=2)
+	pool3 = tf.layers.max_pooling2d(inputs=conv3, pool_size=[2, 2], strides=2)
 
 
 	# Convolutional Layer #4
@@ -110,11 +86,24 @@ def cnn_model_fn(features, labels, mode):
 		padding="same",
 		activation=tf.nn.leaky_relu)
 
+
+	# Convolutional Layer #4
+	# Computes 64 features using a 10x10 filter.
+	# Padding is added to preserve width and height.
+	# Input Tensor Shape: [batch_size, 50, 50, 128]
+	# Output Tensor Shape: [batch_size, 50, 50, 64]
+	conv5 = tf.layers.conv2d(
+		inputs=conv4,
+		filters=64,
+		kernel_size=[10, 10],
+		padding="same",
+		activation=tf.nn.leaky_relu)
+
 	# Pooling Layer #4
 	# Second max pooling layer with a 4x4 filter and stride of 4
-	# Input Tensor Shape: [batch_size, 50, 50, 128]
-	# Output Tensor Shape: [batch_size, 25, 25, 128]
-	pool4 = tf.layers.max_pooling2d(inputs=conv4, pool_size=[2, 2], strides=2)
+	# Input Tensor Shape: [batch_size, 50, 50, 64]
+	# Output Tensor Shape: [batch_size, 25, 25, 64]
+	pool4 = tf.layers.max_pooling2d(inputs=conv5, pool_size=[2, 2], strides=2)
 
 
 	# Flatten tensor into a batch of vectors
@@ -172,7 +161,7 @@ def cnn_model_fn(features, labels, mode):
 	# Configure the Training Op (for TRAIN mode)
 	if mode == tf.estimator.ModeKeys.TRAIN:
 		# optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.04)
-		optimizer = tf.train.AdamOptimizer(learning_rate=0.00005)
+		optimizer = tf.train.AdamOptimizer(learning_rate=0.0001)
 		train_op = optimizer.minimize(
 			loss=loss,
 			global_step=tf.train.get_global_step())
