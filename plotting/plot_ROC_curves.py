@@ -5,9 +5,14 @@ import matplotlib.pyplot as plt
 from sklearn import metrics
 
 
-
+DEEP=True
 
 eval_data_path = '../eval_data.json'
+out_path = 'ROC_curves.png'
+
+if DEEP:
+    eval_data_path = '../eval_data_deep_3.json'
+    out_path = 'ROC_curves_deep_3.png'
 
 
 with open(eval_data_path) as json_data:
@@ -31,7 +36,6 @@ with open(eval_data_path) as json_data:
     plt.ylabel('True Positive Rate')
     plt.title('One-vs-Rest Gesture Classification ROC Curves')
     plt.legend(loc="lower right")
-    plt.savefig('ROC_curves.png', format='png')
-
+    plt.savefig(out_path, format='png')
 
 
