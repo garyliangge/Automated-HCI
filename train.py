@@ -235,49 +235,11 @@ def cnn_model_fn(features, labels, mode):
 
 
 
-<<<<<<< HEAD
-=======
-def main(unused_argv):
-    # Load training and eval data
-    train_data, train_labels = get_training_batch(200)
-    eval_data, eval_labels = get_eval_data()
-
-    # Create the Estimator
-    mnist_classifier = tf.estimator.Estimator(
-        model_fn=build_estimator_graph, model_dir="./convnet_model")
-
-    # Set up logging for predictions
-    # Log the values in the "Softmax" tensor with label "probabilities"
-    tensors_to_log = {"probabilities": "softmax_tensor"}
-    logging_hook = tf.train.LoggingTensorHook(
-        tensors=tensors_to_log, every_n_iter=2)
-
-    # Train the model
-    train_input_fn = tf.estimator.inputs.numpy_input_fn(
-        x={"x": train_data},
-        y=train_labels,
-        batch_size=20,
-        num_epochs=None,
-        shuffle=True)
-    mnist_classifier.train(
-        input_fn=train_input_fn,
-        steps=20,
-        hooks=[logging_hook])
-
-    # Evaluate the model and print results
-    eval_input_fn = tf.estimator.inputs.numpy_input_fn(
-        x={"x": eval_data},
-        y=eval_labels,
-        num_epochs=1,
-        shuffle=False)
-    eval_results = mnist_classifier.evaluate(input_fn=eval_input_fn)
-    print(eval_results)
->>>>>>> temp
 
 def main(unused_argv):
 	# Create the Estimator
 	classifier = tf.estimator.Estimator(
-		model_fn=cnn_model_fn, model_dir="./convnet_model")
+		model_fn=build_estimator_graph, model_dir="./convnet_model")
 
 	# Set up logging for predictions
 	# Log the values in the "Softmax" tensor with label "probabilities"
