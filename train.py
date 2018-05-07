@@ -3,15 +3,106 @@ from __future__ import division
 from __future__ import print_function
 
 # Imports
+import glob
+import logz
 import numpy as np
+from sklearn.metrics import roc_curve, roc_auc_score
 import tensorflow as tf
 from datamanager import *
+from models.py import build_estimator_graph
 
 
 
 tf.logging.set_verbosity(tf.logging.INFO)
 NUM_CLASSES = 7
 
+def train(ops, iterations, train_iterator, valid_iterator,
+          log_freq, save_freq,):
+    with tf.Session() as sess:
+        # If a model exists, restore it. Otherwise, initialize a new one
+        if glob.glob(save_path + '*'):
+            ops["saver"].restore(sess, save_path)
+            print("Weights restored.")
+        else:
+            sess.run(ops["init_op"])
+            print("Weights initialized.")
+
+        # The training iterator
+        
+        training_losses = []
+        valid_losses = []
+
+        for i in range(iterations):
+            input_, target = next(train_iterator)
+            # One step of training
+            _loss, _ = sess.run([ops["loss"], ops["optimizer"]], feed_dict={
+                ops["input_placeholder"]: input_,
+                ops["training"]: True
+            })
+
+            training_losses.append(_loss)
+
+            # Save the model
+            if i % save_freq == 0:
+                save_path = ops["saver"].save(sess, save_path)
+                print("Model saved in file: %s" % save_path)
+
+            # Validate and log results
+            if i % log_freq == 0:
+                all_logits = np.array([[0] * num_logits])
+                all_targets = np.array([[0] * num_logits])
+
+                # The validation loop
+                for _ in range(valid_size):
+                    b, d, t = next(train_iterator)
+                    _logits, _valid_loss = sess.run([ops["logits"], ops["loss"]],
+                     feed_dict={
+                        ops["input_placeholder"]: b,
+                        ops["dnase_placeholder"]: d,
+                        ops["target_placeholder"]: t,
+                        ops["training"]: False})
+                    valid_losses += [_valid_loss]
+                    all_logits = np.append(all_logits, _logits, axis = 0)
+                    all_targets = np.append(all_targets, t, axis = 0)
+
+                # Log relevant statistics
+                log(i, training_losses, valid_losses, all_logits, all_targets,
+                    num_logits)
+                training_losses = []
+                valid_losses = []
+
+def log(i,
+        training_losses,
+        valid_losses,
+        valid_logits,
+        valid_targets,
+        num_logits
+        ):
+    """Logging a single gradient step to outfile.
+
+    Args:
+        i: Int. Current gradient step iteration.
+        training_losses: Float. The training loss.
+        validation_losses: Float. The validation loss.
+        valid_logits: To comput ROC AUC.
+        valid_targets: To comput ROC AUC.
+
+    Returns:
+        Nothing. Logs get dumped to outfile.
+    """
+    aucs = []
+    for j in np.arange(num_logits):
+        try:
+            aucs += [roc_auc_score(valid_targets[:, j],valid_logits[:, j])]
+        except ValueError:
+            continue
+
+    logz.log_tabular('Iteration', i)
+    logz.log_tabular('Loss', np.mean(training_losses))
+    logz.log_tabular('Valid Loss', np.mean(valid_losses))
+    logz.log_tabular('Average AUPRC', np.mean(aucs))
+    logz.log_tabular('80th percentile AUPRC', np.percentile(aucs, 80))
+    logz.dump_tabular()
 
 """A CNN model based on the tensorflow MNIST tutorial."""
 
@@ -144,6 +235,44 @@ def cnn_model_fn(features, labels, mode):
 
 
 
+<<<<<<< HEAD
+=======
+def main(unused_argv):
+    # Load training and eval data
+    train_data, train_labels = get_training_batch(200)
+    eval_data, eval_labels = get_eval_data()
+
+    # Create the Estimator
+    mnist_classifier = tf.estimator.Estimator(
+        model_fn=build_estimator_graph, model_dir="./convnet_model")
+
+    # Set up logging for predictions
+    # Log the values in the "Softmax" tensor with label "probabilities"
+    tensors_to_log = {"probabilities": "softmax_tensor"}
+    logging_hook = tf.train.LoggingTensorHook(
+        tensors=tensors_to_log, every_n_iter=2)
+
+    # Train the model
+    train_input_fn = tf.estimator.inputs.numpy_input_fn(
+        x={"x": train_data},
+        y=train_labels,
+        batch_size=20,
+        num_epochs=None,
+        shuffle=True)
+    mnist_classifier.train(
+        input_fn=train_input_fn,
+        steps=20,
+        hooks=[logging_hook])
+
+    # Evaluate the model and print results
+    eval_input_fn = tf.estimator.inputs.numpy_input_fn(
+        x={"x": eval_data},
+        y=eval_labels,
+        num_epochs=1,
+        shuffle=False)
+    eval_results = mnist_classifier.evaluate(input_fn=eval_input_fn)
+    print(eval_results)
+>>>>>>> temp
 
 def main(unused_argv):
 	# Create the Estimator
@@ -171,8 +300,6 @@ def main(unused_argv):
 			input_fn=train_input_fn,
 			steps=25,
 			hooks=[logging_hook])
-
-
 
 if __name__ == "__main__":
 	tf.app.run()
