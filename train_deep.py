@@ -15,7 +15,32 @@ NUM_CLASSES = 7
 
 """A CNN model based on the tensorflow MNIST tutorial."""
 
-def cnn_model_fn(features, labels, mode):
+
+
+
+
+def getActivations(layer, stimuli):
+    units = layer.eval(session=sess,feed_dict={x:stimuli, order='F'),keep_prob:1.0})
+    plotNNFilter(units)
+
+
+def plotNNFilter(units):
+    filters = units.shape[3]
+    plt.figure(1, figsize=(20,20))
+    n_columns = 6
+    n_rows = math.ceil(filters / n_columns) + 1
+    for i in range(filters):
+        plt.subplot(n_rows, n_columns, i+1)
+        plt.title('Filter ' + str(i))
+        plt.imshow(units[0,:,:,i], interpolation="nearest", cmap="gray")
+        plt.savefig('./GARY.png', format='png')
+
+
+
+
+
+
+def cnn_model_fn(features, labels, mode, visualize=True):
 	"""Model function for CNN."""
 	# Input Layer
 	# Reshape X to 4-D tensor: [batch_size, width, height, channels]
@@ -29,6 +54,10 @@ def cnn_model_fn(features, labels, mode):
 		kernel_size=[20, 20],
 		padding="same",
 		activation=tf.nn.leaky_relu)
+
+	if visualize:
+		getActivations(conv1, features)
+
 
 	# Pooling Layer #1
 	# First max pooling layer with a 2x2 filter and stride of 2
