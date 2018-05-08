@@ -40,7 +40,7 @@ def main(unused_argv):
    # print(classifier.get_variable_names())
         weights = classifier.get_variable_value(kernel + '/kernel')
 
-        for i in range(32):
+        for i in range(weights.shape[3]):
             w = weights[:,:,0,i]
             wnorm = normalize(w) * 255
             #wnorm = wnorm.astype(int)
