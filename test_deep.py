@@ -31,16 +31,22 @@ def main(unused_argv):
     classifier = tf.estimator.Estimator(
         model_fn=cnn_model_fn, model_dir="./convnet_model_deep")
 
-    #weights = classifier.get_variable_names()
-    weights = classifier.get_variable_value('conv2d/kernel')
 
-    for i in range(32):
-        w = weights[:,:,0,i]
-        wnorm = normalize(w) * 255
-        #wnorm = wnorm.astype(int)
-        im = Image.fromarray(wnorm)
-        im = im.convert('RGB')
-        im.save('./filters/conv1_{}.png'.format(i))
+    for i in range(5):
+        kernel = 'conv2d'
+        if i:
+            kernel += '_{}'.format(i)
+
+   # print(classifier.get_variable_names())
+        weights = classifier.get_variable_value(kernel + '/kernel')
+
+        for i in range(32):
+            w = weights[:,:,0,i]
+            wnorm = normalize(w) * 255
+            #wnorm = wnorm.astype(int)
+            im = Image.fromarray(wnorm)
+            im = im.convert('RGB')
+            im.save('./filters/{}/{}_{}.png'.format(kernel, kernel, i))
 
     #plt.imshow(weights, cmap='gray')
     #plt.savefig('./GARY.png', format='png')
