@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 # Imports
+import os
 import json
 import numpy as np
 import tensorflow as tf
@@ -38,7 +39,7 @@ def main(unused_argv):
             kernel += '_{}'.format(i)
 
    # print(classifier.get_variable_names())
-        weights = classifier.get_variable_value(kernel + '/kernel')
+        weights = classifier.get_variable_value(kernel + '/kernel/Adam')
 
         for i in range(weights.shape[3]):
             w = weights[:,:,0,i]
@@ -46,7 +47,11 @@ def main(unused_argv):
             #wnorm = wnorm.astype(int)
             im = Image.fromarray(wnorm)
             im = im.convert('RGB')
-            im.save('./filters/{}/{}_{}.png'.format(kernel, kernel, i))
+
+            filter_dir = './filters/{}'.format(kernel)
+            if not os.path.isdir(filter_dir):
+                os.makedirs(filter_dir)
+            im.save(filter_dir + '/{}_{}.png'.format(kernel, i))
 
     #plt.imshow(weights, cmap='gray')
     #plt.savefig('./GARY.png', format='png')
