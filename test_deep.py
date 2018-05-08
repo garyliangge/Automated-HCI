@@ -40,7 +40,7 @@ def main(unused_argv):
         #wnorm = wnorm.astype(int)
         im = Image.fromarray(wnorm)
         im = im.convert('RGB')
-        im.save('./Gary_{}.png'.format(i))
+        im.save('./filters/conv1_{}.png'.format(i))
 
     #plt.imshow(weights, cmap='gray')
     #plt.savefig('./GARY.png', format='png')
