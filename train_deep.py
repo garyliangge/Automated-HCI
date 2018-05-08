@@ -20,8 +20,10 @@ NUM_CLASSES = 7
 
 
 def getActivations(layer, stimuli):
-    units = layer.eval(session=sess,feed_dict={x:stimuli, order='F'),keep_prob:1.0})
-    plotNNFilter(units)
+    with tf.Session() as sess:
+        #units = layer.eval(session=sess, feed_dict={x:stimuli, keep_prob:1.0})
+        units = layer.eval(session=sess)
+        plotNNFilter(units)
 
 
 def plotNNFilter(units):
@@ -34,13 +36,13 @@ def plotNNFilter(units):
         plt.title('Filter ' + str(i))
         plt.imshow(units[0,:,:,i], interpolation="nearest", cmap="gray")
         plt.savefig('./GARY.png', format='png')
+        raise ValueError("Done!")
 
 
 
 
 
-
-def cnn_model_fn(features, labels, mode, visualize=True):
+def cnn_model_fn(features, labels, mode):
 	"""Model function for CNN."""
 	# Input Layer
 	# Reshape X to 4-D tensor: [batch_size, width, height, channels]
@@ -55,8 +57,7 @@ def cnn_model_fn(features, labels, mode, visualize=True):
 		padding="same",
 		activation=tf.nn.leaky_relu)
 
-	if visualize:
-		getActivations(conv1, features)
+	
 
 
 	# Pooling Layer #1
@@ -170,6 +171,9 @@ def cnn_model_fn(features, labels, mode, visualize=True):
 	# Avoid NaN loss error by perturbing logits
 	epsilon = tf.constant(1e-8)
 	logits = logits + epsilon 
+
+	
+
 
 	predictions = {
 		# Generate predictions (for PREDICT and EVAL mode)

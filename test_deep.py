@@ -6,8 +6,12 @@ from __future__ import print_function
 import json
 import numpy as np
 import tensorflow as tf
+import matplotlib.pyplot as plt
 from datamanager import *
 from train_deep import cnn_model_fn
+from PIL import Image
+from sklearn.preprocessing import normalize
+
 
 
 
@@ -26,6 +30,22 @@ def main(unused_argv):
     # Create the Estimator
     classifier = tf.estimator.Estimator(
         model_fn=cnn_model_fn, model_dir="./convnet_model_deep")
+
+    #weights = classifier.get_variable_names()
+    weights = classifier.get_variable_value('conv2d/kernel')
+
+    for i in range(32):
+        w = weights[:,:,0,i]
+        wnorm = normalize(w) * 255
+        #wnorm = wnorm.astype(int)
+        im = Image.fromarray(wnorm)
+        im = im.convert('RGB')
+        im.save('./Gary_{}.png'.format(i))
+
+    #plt.imshow(weights, cmap='gray')
+    #plt.savefig('./GARY.png', format='png')
+
+    raise ValueError("Stop")
 
     if BATCHING:
 
